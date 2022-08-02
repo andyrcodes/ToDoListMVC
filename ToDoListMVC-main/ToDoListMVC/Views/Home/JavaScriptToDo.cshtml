@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "JavaScript Version";
+}
+
+<div class="row mt-5">
+    <div class="col text-center h2 font-weight-bold">
+        JavaScript Version: <span class="mb-5" id="taskCount"></span>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <button type="button" data-toggle="modal" data-target="#newTaskItem" class="btn btn-default btn-block btn-outline-dark mb-2 font-weight-bold">
+                    CREATE TASK
+                </button>
+            </div>
+            <div class="col">
+                <button onclick="ClearTasks()" type="button" class="btn btn-default btn-block btn-outline-danger mb-2 font-weight-bold">
+                    CLEAR TASKS
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped" id="eventData">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="d-none"></th>
+                        <th>Title</th>
+                        <th>Created</th>
+                        <th>Due Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="taskBody">
+                    <!--Data goes here-->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<template id="taskItem-template">
+    <tr id="TaskRow">
+        <td class="d-none" id="id"></td>
+        <td id="title"></td>
+        <td id="created"></td>
+        <td id="dueDate"></td>
+        <td id="tdCrud">
+            <a onclick="CompleteTask(this)" class="btn btn-sm btn-outline-dark" data-toggle="tooltip" data-placement="left" title="Mark Task Completed"><i class="text-success fas fa-check"></i></a>
+            <a onclick="DeleteTask(this)" class="btn btn-sm btn-outline-dark" data-toggle="tooltip" data-placement="top" title="Delete Task"><i class="text-danger fas fa-trash-alt"></i></a>
+        </td>
+    </tr>
+</template>
+
+<!-- Modal window for adding a new Task -->
+<!-- The Modal -->
+<div class="modal" id="newTaskItem">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content cool-border">
+
+            <!-- Modal Header -->
+            <div class="modal-header text-center">
+                <h4 class="modal-title cool-text-inverse">Add New Task</h4>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form onsubmit="CreateTask(this)">
+                    <input type="hidden" name="ModalCreate" value="true" />
+                    <div class="form-group">
+                        <label class="font-weight-bold" for="Title">Title:</label>
+                        <input type="text" class="form-control cool-border" name="Title" id="Title" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="font-weight-bold" for="DueDate">Due Date:</label>
+                        <input type="date" class="form-control cool-border" name="DueDate" id="DueDate" />
+                    </div>
+                    <button type="submit" class="btn btn-dark btn-outline-warning btn-wide">Submit</button>
+                </form>
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark btn-outline-warning" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/site.js" asp-append-version="true"></script>
+}

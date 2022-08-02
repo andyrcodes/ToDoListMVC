@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h2 class="card-title">
+        About the Application
+    </h2>
+    <div class="row">
+        <div class="col-8 offset-2">
+            <p class="text-left">
+                <b>Overview:</b> This application is created using .NET 5 MVC backed with a PostgreSQL database and hosted on Heroku with CI/CD through GitHub.
+            </p>
+            <p class="text-left">
+                <strong>IMPORTANT NOTE:</strong> This is not a secure application, sensitive data should not be entered into the database. The purpose of this application is to demostrate the MVC design pattern.
+            </p>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-8 offset-2">
+            <p class="text-left">
+                <b>JavaScript:</b> This version of the application uses JSON and Local Storage to create a ToDo List. Because Local Storage is used the List can only be accessed from the same browser and will be lost if the Local Storage is cleared.
+            </p>
+            <br />
+            <a asp-action="JavaScriptToDo" class="btn btn-lg btn-success">JavaScript Version</a>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-8 offset-2">
+            <p class="text-left">
+                <b>MVC:</b> This version uses three models (User, ToDoList, and ToDoItem) along with a PostgreSQL database to create a ToDo List that can be accessed from any browser.
+            </p>
+            <br />
+            <a asp-action="MVCToDo" class="btn btn-lg btn-info">MVC Version</a>
+        </div>
+    </div>
+</div>
+
+

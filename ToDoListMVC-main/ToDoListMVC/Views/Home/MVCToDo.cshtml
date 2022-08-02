@@ -1,0 +1,246 @@
+﻿@using ToDoListMVC.Models
+@model User
+@{
+    int taskCount = 0;
+    if (Model is not null)
+    {
+        foreach (var list in Model.Lists)
+        {
+            taskCount += list.Items.Count;
+        };
+
+    };
+    ViewData["Title"] = "MVC Version";
+
+}
+
+@if (Model is null)
+{
+    <form asp-action="UserSubmission" method="post">
+        <div class="form-group">
+            <label asp-for="UserName" class="control-label h3">Create a New User or Access Your Lists</label>
+            <input asp-for="UserName" class="form-control" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <button type="submit" name="newUser" value=true class="btn btn-lg btn-success">Create User</button>
+            <button type="submit" name="newUser" value=false class="btn btn-lg btn-info">Get My Lists</button>
+        </div>
+    </form>
+
+}
+else
+{
+    <div class="row mt-5">
+        <div class="col text-center h2 font-weight-bold">
+            MVC Version: <span class="mb-5"># of Lists (@Model.Lists.Count) | # of Tasks (@taskCount)</span>
+        </div>
+    </div>
+    <hr>
+    <p>
+        <a class="btn btn-primary" data-toggle="collapse" href="#myLists" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">All Lists</a>
+        @foreach (var list in Model.Lists)
+        {
+            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#list-@list.Id" aria-expanded="false" aria-controls="multiCollapseExample2">@list.Name</button>
+        }
+    </p>
+    <div id="accordion">
+        <div class="row">
+            <div class="col">
+                <div class="collapse multi-collapse show" data-parent="#accordion" id="myLists">
+                    <div class="card card-body">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="row">
+                                    <div class="col">
+                                        <button type="button" data-toggle="modal" data-target="#newTaskList" class="btn btn-default btn-block btn-outline-dark mb-2 font-weight-bold">
+                                            CREATE LIST
+                                        </button>
+                                    </div>
+                                    <div class="col">
+                                        <form asp-action="ClearLists" method="post">
+                                            <button name="userName" value="@Model.UserName" type="submit" class="btn btn-default btn-block btn-outline-danger mb-2 font-weight-bold">
+                                                CLEAR LISTS
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <hr />
+                                <h2 class="text-center">My Lists</h2>
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="eventData">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Task Count</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var list in Model.Lists)
+                                            {
+                                                <tr>
+                                                    <td>@list.Name</td>
+                                                    <td>@list.Items.Count</td>
+                                                    <td>
+                                                        <form asp-action="DeleteList" method="post" asp-route-username="@Model.UserName">
+                                                            <input type="hidden" name="Id" value="@list.Id" />
+                                                            <button type="submit" class="btn btn-sm btn-outline-dark" title="Delete List"><i class="text-danger fas fa-trash-alt"></i></button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        @foreach (var list in Model.Lists)
+        {
+            <div class="row">
+                <div class="col">
+                    <div class="collapse multi-collapse" data-parent="#accordion" id="list-@list.Id">
+                        <div class="card card-body">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col">
+                                            <button type="button" data-toggle="modal" data-target="#newTaskItem-@list.Id" class="btn btn-default btn-block btn-outline-dark mb-2 font-weight-bold">
+                                                CREATE TASK
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <button onclick="ClearTasks()" type="button" class="btn btn-default btn-block btn-outline-danger mb-2 font-weight-bold">
+                                                CLEAR TASKS
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="eventData">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Created</th>
+                                                    <th>Due Date</th>
+                                                    <th>Completed?</th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="taskBody">
+                                                @foreach (var item in list.Items)
+                                                {
+                                                    <tr id="TaskRow">
+                                                        <td id="title">@item.Task</td>
+                                                        <td id="created">@item.CreatedDate.ToString("MMM dd, yyyy")</td>
+                                                        <td id="dueDate">@item.DueDate.ToString("MMM dd, yyyy")</td>
+                                                        <td>
+                                                            @if (item.IsComplete)
+                                                            {
+                                                                <input type="checkbox" checked />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input type="checkbox" />
+                                                            }
+                                                        </td>
+                                                        <td id="tdCrud">
+                                                            <form asp-action="CompleteItem" method="post" asp-route-username="@Model.UserName">
+                                                                <input type="hidden" name="Id" value="@item.Id" />
+                                                                <button type="submit" class="btn btn-sm btn-outline-dark" title="Mark Task Completed"><i class="text-success fas fa-check"></i></button>
+                                                            </form>
+                                                        </td>
+                                                        <td>
+                                                            <form asp-action="DeleteItem" method="post" asp-route-username="@Model.UserName">
+                                                                <input type="hidden" name="Id" value="@item.Id" />
+                                                                <button type="submit" class="btn btn-sm btn-outline-dark" title="Delete Item"><i class="text-danger fas fa-trash-alt"></i></button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal window for adding a new Item -->
+            <!-- The Modal -->
+            <div class="modal" id="newTaskItem-@list.Id">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content cool-border">
+
+                        <!-- Modal Header -->
+                        <div class="modal-header text-center">
+                            <h4 class="modal-title cool-text-inverse">Add New List</h4>
+                        </div>
+
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            <form asp-action="CreateItem" asp-route-username="@Model.UserName">
+                                <input type="hidden" name="ListId" value="@list.Id" />
+                                <div class="form-group">
+                                    <label class="font-weight-bold" for="Name">Task:</label>
+                                    <input type="text" class="form-control cool-border" name="Task" id="Task" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="font-weight-bold" for="DueDate">Due Date:</label>
+                                    <input type="date" class="form-control cool-border" name="DueDate" id="DueDate" />
+                                </div>
+                                <button type="submit" class="btn btn-dark btn-outline-warning btn-wide">Submit</button>
+                            </form>
+                        </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-dark btn-outline-warning" data-dismiss="modal">Close</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        }
+    </div>
+
+    <!-- Modal window for adding a new List -->
+    <!-- The Modal -->
+    <div class="modal" id="newTaskList">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content cool-border">
+
+                <!-- Modal Header -->
+                <div class="modal-header text-center">
+                    <h4 class="modal-title cool-text-inverse">Add New List</h4>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form asp-action="CreateList" asp-route-username="@Model.UserName">
+                        <input type="hidden" name="UserId" value="@Model.Id" />
+                        <div class="form-group">
+                            <label class="font-weight-bold" for="Name">Name:</label>
+                            <input type="text" class="form-control cool-border" name="Name" id="Name" required>
+                        </div>
+                        <button type="submit" class="btn btn-dark btn-outline-warning btn-wide">Submit</button>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark btn-outline-warning" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
